@@ -6,11 +6,16 @@ const bodyParser = require('body-parser');
 const fetch = require('node-fetch');
 const mongoose = require('mongoose');
 const Person = require('./models/app');
+const Rx = require('rx');
+const RxNode = require('rx-node');
 
-console.log('START');
-const promise = mongoose.connect('mongodb://localhost/api', {
-	useMongoClient: true,
-});
+mongoose.Promise = global.Promise;
+const mongooseConnect = Rx.Observable  
+				.fromPromise(mongoose.connect('mongodb://localhost/api', {
+						useMongoClient: true
+					}));
+mongooseConnect
+.subscribe( x => console.log('CONNECTED'), e => console.error(e));
 
 router.route('/')
 .get((req, res, next) => {
