@@ -8,37 +8,34 @@ const mongoose = require('mongoose');
 const Person = require('./models/app');
 const Rx = require('rx');
 const RxNode = require('rx-node');
+const svc1 = "http://localhost:3200";
 
-mongoose.Promise = global.Promise;
-const mongooseConnect = Rx.Observable  
-				.fromPromise(mongoose.connect('mongodb://localhost/api', {
-						useMongoClient: true
-					}));
-mongooseConnect
-.subscribe( x => console.log('CONNECTED'), e => console.error(e));
+const show = (req) => {
+	req.method === 'GET' ? console.log( req.method ) : console.log(req.body);
+};
 
 router.route('/')
 .get((req, res, next) => {
-	console.log('req ', req.body);
-	Person.find()
-	.exec((err, people) => {
-		if(err)
-			res.send(err);
-		res.json(people);
+	const payload = { key: 'all' };
+	const options = {
+		method: 'POST', 
+		headers: {
+			'Content-Type' : 'application/json',
+			'Accept' : 'application/json'
+		},
+		body: JSON.stringify(payload)	
+	};
+	fetch(svc1, options)
+	.then(res => res.json())
+	.then((data) => {
+		res.json({ display: data});
+	})
+	.catch(e => {
+		console.log(res);
 	});
-	//console.log('req ', res.body);
 })
 .post((req, res, next) => {
-	console.log('req ', req.body);
-	const person = new Person();
-	person.firstName = req.body.firstName;
-	person.lastName = req.body.lastName;
-	person.email = req.body.email;
-
-	person.save((err) => {
-		if(err) res.send(err);
-		res.json({ display: 'SAVED'});
-	});
+	show(req);
 });
 
 app.use(bodyParser.urlencoded({extended: true}));
@@ -48,21 +45,3 @@ app.use('/', router);
 app.listen(3100, () => {
 	console.log('Running');
 });
-
-/*
-const proc1 = (req, res, next) => {
-	console.log('proc1 - req ', req.body);
-	next();
-};
-
-const proc2 = (req, res, next) => {
-	res.send("TEST");
-};
-
-const url = "http://localhost:3200";
-
-router
-.route('/')
-.get([ proc1, proc2], (req, res, next) => {})
-.post([ proc1, proc2],(req, res, next) => {});
-*/
