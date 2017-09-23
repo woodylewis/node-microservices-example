@@ -1,0 +1,21 @@
+{
+  "name": "node-example-1",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "main": "nodemon index.js",
+    "svc1": "nodemon service1.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Woody Lewis <woody@woodylewis.com>",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.17.2",
+    "cors": "^2.8.4",
+    "express": "^4.15.3",
+    "mongoose": "^4.11.12",
+    "node-fetch": "^1.7.3",
+    "nodemon": "^1.11.0"
+  }
+}
