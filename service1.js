@@ -11,9 +11,9 @@ const RxNode = require('rx-node');
 
 mongoose.Promise = global.Promise;
 const mongooseConnect = Rx.Observable  
-						.fromPromise(mongoose.connect('mongodb://localhost/api', {
-							useMongoClient: true
-						}));
+		.fromPromise(mongoose.connect('mongodb://localhost/api', {
+			useMongoClient: true
+		}));
 mongooseConnect
 .subscribe( x => console.log('SVC 1 CONNECTED'), e => console.error(e));
 
@@ -25,13 +25,10 @@ router.route('/getList')
 			res.send(err);
 		res.json(people);
 	});
-	/*
-	
- 	*/
 });
 router.route('/writeRecord')
 .post((req, res, next) => {
-	console.log('SVC1 WRITE ' + req.body);
+	console.log('SVC 1 WRITE RECORD' + req.body);
 	const person = new Person();
 	person.firstName = req.body.firstName;
 	person.lastName = req.body.lastName;
@@ -39,6 +36,36 @@ router.route('/writeRecord')
 	person.save((err) => {
 		if(err) res.send(err);
 		res.json({ display: 'SAVED'});
+	});
+});
+router.route('/getRecord')
+.post((req, res, next) => {
+	console.log('SVC1 GET RECORD ' + req.body.id);
+	Person.findById(req.body.id, (err, person) => {
+		if(err) res.send(err);
+		res.json(person);
+	});
+});
+router.route('/editRecord')
+.post((req, res, next) => {
+	console.log('SVC1 EDIT RECORD ' + req.body.id);
+	Person.findById(req.body.id, (err, person) => {
+		if(err) res.send(err);
+		person.firstName = 'EDITED';
+		person.lastName = person.lastName;
+		person.email = person.email;
+		person.save((err) => {
+			if(err) res.send(err);
+			res.json({ display: 'EDITED'});
+		});
+	});
+});
+router.route('/deleteRecord')
+.post((req, res, next) => {
+	console.log('SVC1 DELETE RECORD ' + req.body.id);
+	Person.remove({_id: req.body.id}, (err, person) => {
+		if(err) res.send(err);
+		res.json({ display: 'DELETED'});
 	});
 });
 

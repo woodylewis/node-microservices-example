@@ -11,6 +11,9 @@ const RxNode = require('rx-node');
 const svc1 = "http://localhost:3200/";
 const LIST = 'getList';
 const WRITE = 'writeRecord';
+const READ = 'getRecord';
+const EDIT = 'editRecord';
+const DELETE = 'deleteRecord';
 
 const show = (req) => {
 	req.method === 'GET' ? console.log( req.method ) : console.log(req.body);
@@ -32,6 +35,7 @@ const dispatch = (url,res, body) => {
 	fetch(url, packPayload(body))
 	.then(res => res.json())
 	.then((data) => {
+		//console.log('MAIN RETURN ', data);
 		res.json({ display: data});
 	})
 	.catch(e => {
@@ -47,12 +51,19 @@ router.route('/')
 	dispatch(svc1 + WRITE, res, req.body);
 });
 
-router.route('/:id')
-.get((req, res, next) => {
-})
-.put((req, res, next) => {
-})
-.delete((req, res, next) => {
+router.route('/getRecord')
+.post((req, res, next) => {
+	dispatch(svc1 + READ, res, req.body);
+});
+
+router.route('/editRecord')
+.post((req, res, next) => {
+	dispatch(svc1 + EDIT, res, req.body);
+});
+
+router.route('/deleteRecord')
+.post((req, res, next) => {
+	dispatch(svc1 + DELETE, res, req.body);
 });
 
 app.use(bodyParser.urlencoded({extended: true}));
