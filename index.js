@@ -8,24 +8,28 @@ const mongoose = require('mongoose');
 const Person = require('./models/app');
 const Rx = require('rx');
 const RxNode = require('rx-node');
-const svc1 = "http://localhost:3200";
+const svc1 = "http://localhost:3200/";
+const LIST = 'getList';
+const WRITE = 'writeRecord';
 
 const show = (req) => {
 	req.method === 'GET' ? console.log( req.method ) : console.log(req.body);
 };
 
-router.route('/')
-.get((req, res, next) => {
-	const payload = { key: 'all' };
-	const options = {
+const packPayload = (body) => {
+	const payload = {
 		method: 'POST', 
 		headers: {
 			'Content-Type' : 'application/json',
 			'Accept' : 'application/json'
 		},
-		body: JSON.stringify(payload)	
+		body: JSON.stringify(body)	
 	};
-	fetch(svc1, options)
+	return payload;
+};
+
+const dispatch = (url,res, body) => {
+	fetch(url, packPayload(body))
 	.then(res => res.json())
 	.then((data) => {
 		res.json({ display: data});
@@ -33,9 +37,22 @@ router.route('/')
 	.catch(e => {
 		console.log(res);
 	});
+};
+
+router.route('/')
+.get((req, res, next) => {
+	dispatch(svc1 + LIST, res, { request: 'main'});
 })
 .post((req, res, next) => {
-	show(req);
+	dispatch(svc1 + WRITE, res, req.body);
+});
+
+router.route('/:id')
+.get((req, res, next) => {
+})
+.put((req, res, next) => {
+})
+.delete((req, res, next) => {
 });
 
 app.use(bodyParser.urlencoded({extended: true}));
